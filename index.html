@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cuidando mis Emociones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@400;900&display=swap" rel="stylesheet">
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    html, body{
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      font-family: Arial, sans-serif;
+      background:#000;
+    }
+
+    button{
+      font-family:inherit;
+    }
+
+    .screen{
+      position:fixed;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      display:none;
+    }
+
+    .screen.active{
+      display:block;
+    }
+
+    /* ===================== INICIO ===================== */
+    #inicio{
+      background:url("Imagen/Inicio.png") no-repeat center bottom;
+      background-size:cover;
+      position:relative;
+    }
+
+    .titulo-inicio{
+      position:absolute;
+      top:24%;
+      width:100%;
+      text-align:center;
+      font-family:'Londrina Solid', cursive;
+      font-size:70px;
+      color:white;
+      text-shadow:
+        3px 3px 0 #000,
+        6px 6px 18px rgba(0,0,0,0.65);
+    }
+
+    .play-btn{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%, -50%);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:20px 50px;
+      font-size:28px;
+      font-weight:bold;
+      color:white;
+      border:none;
+      border-radius:50px;
+      background:linear-gradient(#1f9f47,#0d5c2a);
+      box-shadow:
+        0 6px 0 #083d1c,
+        0 12px 25px rgba(0,0,0,0.4);
+      cursor:pointer;
+      transition:0.3s;
+      z-index:5;
+    }
+
+    .play-btn:hover{
+      transform:translate(-50%, -50%) scale(1.08);
+    }
+
+    /* ===================== GALERÍA ===================== */
+    #galeria{
+      background:
+        linear-gradient(rgba(20, 10, 45, 0.08), rgba(20, 10, 45, 0.08)),
+        url("Imagen/fondo.png") no-repeat center center;
+      background-size:cover;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .home-btn{
+      position:absolute;
+      top:8px;
+      right:14px;
+      z-index:30;
+      border:none;
+      background:transparent;
+      color:white;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:4px 8px;
+      text-shadow:0 3px 10px rgba(0,0,0,0.55);
+    }
+
+    .home-icon{
+      width:36px;
+      height:36px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      filter:drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+      flex-shrink:0;
+    }
+
+    .home-icon svg{
+      width:100%;
+      height:100%;
+      fill:#fff;
+      display:block;
+    }
+
+    .home-text{
+      font-family:'Londrina Solid', cursive;
+      font-size:30px;
+      font-weight:400;
+      color:white;
+      line-height:1;
+      letter-spacing:0.2px;
+      transform:translateY(-1px);
+    }
+
+    .galeria-wrap{
+      width:100%;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      align-items:center;
+      padding:18px 18px 18px;
+    }
+
+    .carousel-area{
+      width:100%;
+      max-width:1600px;
+      height:84vh;
+      position:relative;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      overflow:hidden;
+    }
+
+    .viewport{
+      width:100%;
+      overflow:hidden;
+      touch-action:pan-y;
+      cursor:grab;
+      -webkit-user-select:none;
+      user-select:none;
+      padding:22px 52px 64px;
+    }
+
+    .viewport.dragging{
+      cursor:grabbing;
+    }
+
+    .track{
+      display:flex;
+      gap:16px;
+      transition:transform 0.45s ease;
+      will-change:transform;
+      align-items:flex-end;
+      padding-top:40px;
+    }
+
+    .emotion-card{
+      flex:0 0 calc((100% - 48px) / 4);
+      min-width:0;
+      height:335px;
+      border:none;
+      border-radius:28px;
+      cursor:pointer;
+      position:relative;
+      overflow:visible;
+      box-shadow:0 10px 18px rgba(0,0,0,0.22);
+      transition:transform .22s ease, box-shadow .22s ease;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      padding:0;
+      background:transparent;
+    }
+
+    .emotion-card:hover{
+      transform:translateY(-4px);
+      box-shadow:0 16px 24px rgba(0,0,0,0.28);
+    }
+
+    .card-inner{
+      width:100%;
+      height:100%;
+      border-radius:28px;
+      overflow:visible;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+    }
+
+    .emotion-image-space{
+      position:absolute;
+      left:50%;
+      bottom:76px;
+      transform:translateX(-50%);
+      width:108%px;
+      height:250px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      overflow:visible;
+      pointer-events:none;
+    }
+
+    .emotion-image-space img{
+      position:relative;
+      width:auto;
+      height:100%;
+      max-width:none;
+      object-fit:contain;
+      display:block;
+      filter:drop-shadow(0 6px 8px rgba(0,0,0,0.16));
+      pointer-events:none;
+    }
+
+    .emotion-name{
+      position:relative;
+      z-index:3;
+      font-family:'Londrina Solid', cursive;
+      font-size:22px;
+      color:#111;
+      text-align:left;
+      padding:0 16px 14px;
+      line-height:1;
+      letter-spacing:.2px;
+    }
+
+    .card-red .card-inner{ background:linear-gradient(180deg,#f5e7e5 0%, #be2318 100%); }
+    .card-green .card-inner{ background:linear-gradient(180deg,#eaf3e7 0%, #55a83c 100%); }
+    .card-yellow .card-inner{ background:linear-gradient(180deg,#f8f3cf 0%, #dedd4f 100%); }
+    .card-orange .card-inner{ background:linear-gradient(180deg,#f2e0d5 0%, #db5723 100%); }
+    .card-blue .card-inner{ background:linear-gradient(180deg,#deecff 0%, #2e7ce0 100%); }
+    .card-lilac .card-inner{ background:linear-gradient(180deg,#eee8f8 0%, #6e3bb0 100%); }
+    .card-cyan .card-inner{ background:linear-gradient(180deg,#daf7f4 0%, #179292 100%); }
+    .card-pink .card-inner{ background:linear-gradient(180deg,#f8eaf0 0%, #df6698 100%); }
+    .card-gray .card-inner{ background:linear-gradient(180deg,#eef1f7 0%, #5478d5 100%); }
+
+    /* PERSONALIZACIÓN DE TARJETAS */
+    .card-red{ height:250px; }
+    .img-enojo{ left:0px; bottom:-38px; transform:translate(0px, 4px) scale(1.25); height:180% !important; }
+    .name-enojo{ left:0px; bottom:0px; font-size:50px; }
+
+    .card-green{ height:375px; }
+    .img-desagrado{ left:-60px; bottom:-110px; transform:translate(0px, -2px) scale(1.30); height:220% !important; }
+    .name-desagrado{ left:0px; bottom:0px; font-size:50px; }
+
+    .card-yellow{ height:450px; }
+    .img-alegria{ left:-80px; bottom:-120px; transform:translate(18px, -8px) scale(1.28); height:225% !important; }
+    .name-alegria{ left:0px; bottom:0px; font-size:50px; }
+
+    .card-orange{ height:319px; }
+    .img-ansiedad{ left:-20px; bottom:-90px; transform:translate(0px, 2px) scale(1.22); height:210% !important; }
+    .name-ansiedad{ left:0px; bottom:0px; font-size:50px; }
+
+    .card-blue{ height:250px; }
+    .img-tristeza{ left:-30px; bottom:-173px; transform:translate(0px, -6px) scale(1.32); height:225% !important; }
+    .name-tristeza{ left:0px; bottom:0px; font-size:50px; }
+
+    .card-lilac{ height:345px; }
+    .img-miedo{ left:14px; bottom:-129px; transform:translate(0px, 6px) scale(1.28); height:225% !important; }
+    .name-miedo{ left:0px; bottom:0px; font-size:50px; }
+
+    .card-cyan{ height:265px; }
+    .img-envidia{ left:0px; bottom:-140px; transform:translate(0px, 8px) scale(1.35); height:230% !important; }
+    .name-envidia{ left:0px; bottom:0px; font-size:50px; }
+
+    .card-pink{ height:410px; }
+    .img-verguenza{ left:0px; bottom:-110px; transform:translate(0px, 4px) scale(1.28); height:235% !important; }
+    .name-verguenza{ left:0px; bottom:0px; font-size:50px; }
+
+    .card-gray{ height:460px; }
+    .img-aburrimiento{ left:0px; bottom:-74px; transform:translate(0px, 10px) scale(1.32); height:230% !important; }
+    .name-aburrimiento{ left:0px; bottom:0px; font-size:50px; }
+
+    .name-enojo,
+    .name-desagrado,
+    .name-alegria,
+    .name-ansiedad,
+    .name-tristeza,
+    .name-miedo,
+    .name-envidia,
+    .name-verguenza,
+    .name-aburrimiento{
+      position:relative;
+    }
+
+    .arrow{
+      position:absolute;
+      bottom:2px;
+      width:46px;
+      height:46px;
+      border:none;
+      background:transparent;
+      color:white;
+      font-size:34px;
+      cursor:pointer;
+      z-index:20;
+      text-shadow:0 3px 10px rgba(0,0,0,0.5);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .arrow.left{ left:36px; }
+    .arrow.right{ right:36px; }
+
+    .progress-bar{
+      position:absolute;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      width:min(86%, 1040px);
+      height:12px;
+      border:2px solid rgba(255,255,255,0.9);
+      border-radius:999px;
+      z-index:15;
+      overflow:hidden;
+      background:rgba(255,255,255,0.03);
+    }
+
+    .progress-thumb{
+      position:absolute;
+      left:0;
+      top:0;
+      height:100%;
+      width:25%;
+      background:rgba(255,255,255,0.95);
+      border-radius:999px;
+      transition:transform 0.25s ease;
+      cursor:pointer;
+    }
+
+    .progress-thumb.dragging{
+      transition:none;
+      cursor:grabbing;
+    }
+
+    /* ===================== DIBUJO ===================== */
+    #dibujo{
+      position:relative;
+      overflow:hidden;
+    }
+
+    .draw-screen{
+      width:100%;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      padding:18px 22px;
+    }
+
+    .draw-top{
+      width:100%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      z-index:10;
+      margin-bottom:8px;
+    }
+
+    .draw-left-buttons,
+    .draw-right-buttons{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .draw-btn{
+      border:none;
+      border-radius:999px;
+      padding:12px 20px;
+      font-family:'Londrina Solid', cursive;
+      font-size:24px;
+      color:white;
+      cursor:pointer;
+      box-shadow:0 6px 0 rgba(0,0,0,0.22);
+      transition:transform .2s ease;
+    }
+
+    .draw-btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .btn-volver{ background:linear-gradient(#4d6d96,#2d4667); }
+    .btn-borrar{ background:linear-gradient(#ff6a6a,#cf3535); }
+    .btn-guardar{ background:linear-gradient(#1ea84d,#0f6a2c); }
+
+    .draw-layout{
+      flex:1;
+      display:grid;
+      grid-template-columns: 1fr 170px 1fr;
+      align-items:center;
+      gap:28px;
+      height:100%;
+    }
+
+    .reference-side,
+    .canvas-side{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100%;
+    }
+
+    .reference-image{
+      width:min(1000vw, 900px);
+      height:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 12px 18px rgba(0,0,0,0.15));
+    }
+
+    .colors-column{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:28px;
+    }
+
+    .color-circle{
+      width:90px;
+      height:90px;
+      border:none;
+      border-radius:50%;
+      cursor:pointer;
+      box-shadow:0 8px 16px rgba(0,0,0,0.16);
+      transition:transform .18s ease, box-shadow .18s ease;
+      border:6px solid transparent;
+    }
+
+    .color-circle:hover{
+      transform:scale(1.06);
+    }
+
+    .color-circle.active{
+      border-color:white;
+      box-shadow:0 0 0 4px rgba(255,255,255,0.35), 0 10px 20px rgba(0,0,0,0.22);
+    }
+
+    .canvas-card{
+      width:min(36vw, 410px);
+      height:min(76vh, 540px);
+      background:#ffffff;
+      border-radius:28px;
+      position:relative;
+      overflow:hidden;
+      box-shadow:0 14px 24px rgba(0,0,0,0.14);
+    }
+
+    .outline-image{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      pointer-events:none;
+      z-index:1;
+    }
+
+    #paintCanvas{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:2;
+      cursor:crosshair;
+    }
+
+    @media (max-width: 900px){
+      .draw-layout{
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        gap:20px;
+        justify-items:center;
+      }
+
+      .reference-image{
+        width:min(52vw, 280px);
+      }
+
+      .colors-column{
+        flex-direction:row;
+        flex-wrap:wrap;
+        gap:18px;
+      }
+
+      .color-circle{
+        width:74px;
+        height:74px;
+      }
+
+      .canvas-card{
+        width:min(82vw, 400px);
+        height:min(48vh, 450px);
+      }
+
+      .draw-btn{
+        font-size:19px;
+        padding:10px 14px;
+      }
+    }
+
+    @media (max-width: 1280px){
+      .emotion-card{
+        height:310px;
+      }
+
+      .card-inner{
+        border-radius:26px;
+      }
+
+      .emotion-image-space{
+        height:330px;
+        bottom:42px;
+      }
+
+      .emotion-name{
+        font-size:21px;
+      }
+    }
+
+    @media (max-width: 980px){
+      .titulo-inicio{
+        font-size:42px;
+        top:10%;
+      }
+
+      .play-btn{
+        font-size:22px;
+        padding:16px 34px;
+      }
+
+      .viewport{
+        padding:18px 44px 54px;
+      }
+
+      .track{
+        gap:14px;
+      }
+
+      .emotion-card{
+        flex:0 0 calc((100% - 28px) / 3);
+        height:290px;
+        border-radius:24px;
+      }
+
+      .card-inner{
+        border-radius:24px;
+      }
+
+      .emotion-image-space{
+        height:300px;
+        bottom:40px;
+      }
+
+      .emotion-name{
+        font-size:20px;
+        padding:0 14px 12px;
+      }
+
+      .progress-thumb{
+        width:33.3333%;
+      }
+    }
+
+    @media (max-width: 768px){
+      .galeria-wrap{
+        padding:18px 12px 24px;
+      }
+
+      .viewport{
+        padding:16px 38px 52px;
+      }
+
+      .track{
+        gap:12px;
+      }
+
+      .emotion-card{
+        flex:0 0 calc((100% - 12px) / 2);
+        min-width:145px;
+        height:250px;
+        border-radius:22px;
+      }
+
+      .card-inner{
+        border-radius:22px;
+      }
+
+      .emotion-image-space{
+        width:112%;
+        height:250px;
+        bottom:34px;
+      }
+
+      .emotion-name{
+        font-size:17px;
+        padding:0 12px 10px;
+      }
+
+      .arrow{
+        bottom:0px;
+      }
+
+      .progress-bar{
+        height:10px;
+        bottom:14px;
+      }
+
+      .home-btn{
+        top:6px;
+        right:10px;
+        gap:6px;
+        padding:2px 4px;
+      }
+
+      .home-icon{
+        width:28px;
+        height:28px;
+      }
+
+      .home-text{
+        font-size:22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUDIO GENERAL DEL JUEGO -->
+  <!-- CAMBIA LA RUTA POR TU AUDIO -->
+  <audio id="bgMusic" src="Audio/musica-juego.mp3" loop></audio>
+
+  <section id="inicio" class="screen active">
+    <div class="titulo-inicio">Cuidando mis Emociones</div>
+
+    <button class="play-btn" onclick="mostrarPantalla('galeria')">
+      ▶ JUGAR
+    </button>
+  </section>
+
+  <section id="galeria" class="screen">
+    <button class="home-btn" onclick="mostrarPantalla('inicio')">
+      <span class="home-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3.2 2.8 10.7a1 1 0 0 0-.1 1.4 1 1 0 0 0 1.4.1l1.1-.9V20a1 1 0 0 0 1 1h4.6a1 1 0 0 0 1-1v-4.6h1.4V20a1 1 0 0 0 1 1h4.6a1 1 0 0 0 1-1v-8.7l1.1.9a1 1 0 0 0 1.4-.1 1 1 0 0 0-.1-1.4L12 3.2z"/>
+        </svg>
+      </span>
+      <span class="home-text">Inicio</span>
+    </button>
+
+    <div class="galeria-wrap">
+      <div class="carousel-area">
+        <div class="viewport" id="viewport">
+          <div class="track" id="track">
+
+            <button class="emotion-card card-red" onclick="seleccionarEmocion('Enojado')">
+              <div class="card-inner">
+                <div class="emotion-image-space">
+                  <img src="Imagen/Enojo.png" alt="Enojado" class="img-enojo">
+                </div>
+                <div class="emotion-name name-enojo">Enojado</div>
+              </div>
+            </button>
+
+            <button class="emotion-card card-green" onclick="seleccionarEmocion('Desagrado')">
+              <div class="card-inner">
+                <div class="emotion-image-space">
+                  <img src="Imagen/disgusto.png" alt="Desagrado" class="img-desagrado">
+                </div>
+                <div class="emotion-name name-desagrado">Desagrado</div>
+              </div>
+            </button>
+
+            <button class="emotion-card card-yellow" onclick="seleccionarEmocion('Alegría')">
+              <div class="card-inner">
+                <div class="emotion-image-space">
+                  <img src="Imagen/alegria.png" alt="Alegría" class="img-alegria">
+                </div>
+                <div class="emotion-name name-alegria">Alegría</div>
+              </div>
+            </button>
+
+            <button class="emotion-card card-orange" onclick="seleccionarEmocion('Ansiedad')">
+              <div class="card-inner">
+                <div class="emotion-image-space">
+                  <img src="Imagen/ansiedad.png" alt="Ansiedad" class="img-ansiedad">
+                </div>
+                <div class="emotion-name name-ansiedad">Ansiedad</div>
+              </div>
+            </button>
+
+            <button class="emotion-card card-blue" onclick="seleccionarEmocion('Tristeza')">
+              <div class="card-inner">
+                <div class="emotion-image-space">
+                  <img src="Imagen/tristeza.png" alt="Tristeza" class="img-tristeza">
+                </div>
+                <div class="emotion-name name-tristeza">Tristeza</div>
+              </div>
+            </button>
+
+            <button class="emotion-card card-lilac" onclick="seleccionarEmocion('Miedo')">
+              <div class="card-inner">
+                <div class="emotion-image-space">
+                  <img src="Imagen/Miedo.png" alt="Miedo" class="img-miedo">
+                </div>
+                <div class="emotion-name name-miedo">Miedo</div>
+              </div>
+            </button>
+
+            <button class="emotion-card card-cyan" onclick="seleccionarEmocion('Envidia')">
+              <div class="card-inner">
+                <div class="emotion-image-space">
+                  <img src="Imagen/Envidia.png" alt="Envidia" class="img-envidia">
+                </div>
+                <div class="emotion-name name-envidia">Envidia</div>
+              </div>
+            </button>
+
+            <button class="emotion-card card-pink" onclick="seleccionarEmocion('Vergüenza')">
+              <div class="card-inner">
+                <div class="emotion-image-space">
+                  <img src="Imagen/Verguenza.png" alt="Vergüenza" class="img-verguenza">
+                </div>
+                <div class="emotion-name name-verguenza">Vergüenza</div>
+              </div>
+            </button>
+
+            <button class="emotion-card card-gray" onclick="seleccionarEmocion('Aburrimiento')">
+              <div class="card-inner">
+                <div class="emotion-image-space">
+                  <img src="Imagen/Aburrimiento.png" alt="Aburrimiento" class="img-aburrimiento">
+                </div>
+                <div class="emotion-name name-aburrimiento">Aburrimiento</div>
+              </div>
+            </button>
+
+          </div>
+        </div>
+
+        <button class="arrow left" onclick="moverCarrusel(-1)">◀</button>
+        <button class="arrow right" onclick="moverCarrusel(1)">▶</button>
+
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-thumb" id="thumb"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="dibujo" class="screen">
+    <div class="draw-screen" id="drawScreen">
+      <div class="draw-top">
+        <div class="draw-left-buttons">
+          <button class="draw-btn btn-volver" onclick="mostrarPantalla('galeria')">Volver</button>
+        </div>
+
+        <div class="draw-right-buttons">
+          <button class="draw-btn btn-borrar" onclick="clearCanvas()">Borrar</button>
+          <button class="draw-btn btn-guardar" onclick="saveDrawing()">Guardar</button>
+        </div>
+      </div>
+
+      <div class="draw-layout">
+        <div class="reference-side">
+          <!-- AQUÍ VA TU IMAGEN A COLOR -->
+          <img id="referenceImage" class="reference-image" src="" alt="Imagen guía">
+        </div>
+
+        <div class="colors-column">
+          <button class="color-circle active" id="color1" onclick="setColorFromButton(this)"></button>
+          <button class="color-circle" id="color2" onclick="setColorFromButton(this)"></button>
+          <button class="color-circle" id="color3" onclick="setColorFromButton(this)"></button>
+          <button class="color-circle" id="color4" onclick="setColorFromButton(this)"></button>
+        </div>
+
+        <div class="canvas-side">
+          <div class="canvas-card">
+            <!-- AQUÍ VA TU IMAGEN BLANCO Y NEGRO -->
+            <img id="outlineImage" class="outline-image" src="" alt="Dibujo para pintar">
+            <canvas id="paintCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const screens = document.querySelectorAll(".screen");
+    const viewport = document.getElementById("viewport");
+    const track = document.getElementById("track");
+    const thumb = document.getElementById("thumb");
+    const progressBar = document.getElementById("progressBar");
+    const bgMusic = document.getElementById("bgMusic");
+
+    const canvas = document.getElementById("paintCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let currentIndex = 0;
+    let cardsPerView = getCardsPerView();
+    let maxIndex = 0;
+    let autoCarrusel = null;
+
+    let isPainting = false;
+    let currentColor = "#7b2d00";
+    let brushSize = 8;
+    const colorButtons = document.querySelectorAll(".color-circle");
+    let emocionActual = "emocion";
+
+    /* PERSONALIZA AQUÍ LAS RUTAS DE TUS IMÁGENES */
+    const emotionConfig = {
+      "Enojado": {
+        bg: "linear-gradient(90deg, #b51212 0%, #dfb8b8 100%)",
+        colorImage: "Imagen/enojo-color.png",
+        outlineImage: "Imagen/1.png",
+        colors: ["#7b2d00", "#ff2b2b", "#5a1e00", "#dd0000"]
+      },
+      "Desagrado": {
+        bg: "linear-gradient(90deg, #5d9f4f 0%, #d9edd2 100%)",
+        colorImage: "Imagen/disgusto-color.png",
+        outlineImage: "Imagen/2.png",
+        colors: ["#2d572c", "#66bb44", "#9ad26b", "#c2e89a"]
+      },
+      "Alegría": {
+        bg: "linear-gradient(90deg, #d6c814 0%, #f6efb8 100%)",
+        colorImage: "Imagen/alegria-color.png",
+        outlineImage: "Imagen/3.png",
+        colors: ["#fff066", "#ffd60a", "#ffb703", "#f4e04d"]
+      },
+      "Ansiedad": {
+        bg: "linear-gradient(90deg, #d55a24 0%, #f1d2c3 100%)",
+        colorImage: "Imagen/ansiedad-color.png",
+        outlineImage: "Imagen/4.png",
+        colors: ["#a63d00", "#ff7b00", "#d95d39", "#f4a261"]
+      },
+      "Tristeza": {
+        bg: "linear-gradient(90deg, #2e7ce0 0%, #dce9ff 100%)",
+        colorImage: "Imagen/tristeza-color.png",
+        outlineImage: "Imagen/5.png",
+        colors: ["#133c73", "#2e7ce0", "#5fa8ff", "#9bc8ff"]
+      },
+      "Miedo": {
+        bg: "linear-gradient(90deg, #6e3bb0 0%, #e7ddf6 100%)",
+        colorImage: "Imagen/miedo-color.png",
+        outlineImage: "Imagen/6.png",
+        colors: ["#3f1d73", "#6e3bb0", "#8c5bd6", "#b497e7"]
+      },
+      "Envidia": {
+        bg: "linear-gradient(90deg, #178f8f 0%, #d8f5f4 100%)",
+        colorImage: "Imagen/envidia-color.png",
+        outlineImage: "Imagen/7.png",
+        colors: ["#0d4f4f", "#179292", "#36b5b5", "#73e7e6"]
+      },
+      "Vergüenza": {
+        bg: "linear-gradient(90deg, #d95c90 0%, #f7dde8 100%)",
+        colorImage: "Imagen/verguenza-color.png",
+        outlineImage: "Imagen/8.png",
+        colors: ["#9b2c5a", "#d95c90", "#ef8cb4", "#f6b7cf"]
+      },
+      "Aburrimiento": {
+        bg: "linear-gradient(90deg, #5478d5 0%, #e2e9fa 100%)",
+        colorImage: "Imagen/aburrimiento-color.png",
+        outlineImage: "Imagen/9.png",
+        colors: ["#2f4d9c", "#5478d5", "#7ea0ef", "#b7caf8"]
+      }
+    };
+
+    function iniciarMusica(){
+      bgMusic.volume = 0.4;
+      bgMusic.play().catch(() => {});
+    }
+
+    document.addEventListener("click", iniciarMusica, { once:true });
+    document.addEventListener("touchstart", iniciarMusica, { once:true });
+
+    function mostrarPantalla(id){
+      screens.forEach(screen => screen.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+
+      if(id === "galeria"){
+        recalcularCarrusel();
+        iniciarAutoCarrusel();
+      } else {
+        detenerAutoCarrusel();
+      }
+
+      if(id === "dibujo"){
+        setTimeout(() => {
+          resizeCanvas();
+        }, 50);
+      }
+    }
+
+    function getCardsPerView(){
+      if(window.innerWidth <= 768) return 2;
+      if(window.innerWidth <= 980) return 3;
+      return 4;
+    }
+
+    function recalcularCarrusel(){
+      cardsPerView = getCardsPerView();
+      const totalCards = track.children.length;
+      maxIndex = Math.max(0, totalCards - cardsPerView);
+
+      if(currentIndex > maxIndex){
+        currentIndex = maxIndex;
+      }
+
+      actualizarCarrusel();
+    }
+
+    function actualizarCarrusel(){
+      const firstCard = track.children[0];
+      if(!firstCard) return;
+
+      const trackStyle = window.getComputedStyle(track);
+      const gap = parseFloat(trackStyle.gap || 0);
+      const cardWidth = firstCard.getBoundingClientRect().width;
+
+      const desplazamiento = currentIndex * (cardWidth + gap);
+      track.style.transform = `translateX(-${desplazamiento}px)`;
+
+      actualizarBarra();
+    }
+
+    function actualizarBarra(){
+      const totalCards = track.children.length;
+      const totalPasos = Math.max(1, totalCards - cardsPerView);
+      const avance = totalPasos === 0 ? 0 : currentIndex / totalPasos;
+
+      let anchoThumb = 25;
+      if(cardsPerView === 3) anchoThumb = 33.3333;
+      if(cardsPerView === 2) anchoThumb = 50;
+
+      thumb.style.width = anchoThumb + "%";
+      thumb.style.transform = `translateX(${avance * (100 - anchoThumb)}%)`;
+    }
+
+    function moverCarrusel(direccion){
+      currentIndex += direccion;
+
+      if(currentIndex < 0) currentIndex = 0;
+      if(currentIndex > maxIndex) currentIndex = maxIndex;
+
+      actualizarCarrusel();
+      reiniciarAutoCarrusel();
+    }
+
+    function iniciarAutoCarrusel(){
+      detenerAutoCarrusel();
+      autoCarrusel = setInterval(() => {
+        if(currentIndex >= maxIndex){
+          currentIndex = 0;
+        } else {
+          currentIndex += 1;
+        }
+        actualizarCarrusel();
+      }, 3200);
+    }
+
+    function detenerAutoCarrusel(){
+      clearInterval(autoCarrusel);
+    }
+
+    function reiniciarAutoCarrusel(){
+      iniciarAutoCarrusel();
+    }
+
+    function seleccionarEmocion(emocion){
+      const config = emotionConfig[emocion];
+      if(!config) return;
+
+      emocionActual = emocion.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      document.getElementById("drawScreen").style.background = config.bg;
+      document.getElementById("referenceImage").src = config.colorImage;
+      document.getElementById("outlineImage").src = config.outlineImage;
+
+      document.getElementById("color1").style.background = config.colors[0];
+      document.getElementById("color2").style.background = config.colors[1];
+      document.getElementById("color3").style.background = config.colors[2];
+      document.getElementById("color4").style.background = config.colors[3];
+
+      colorButtons.forEach(btn => btn.classList.remove("active"));
+      document.getElementById("color1").classList.add("active");
+      currentColor = config.colors[0];
+
+      clearCanvas();
+      mostrarPantalla("dibujo");
+    }
+
+    let isDragging = false;
+    let startX = 0;
+
+    viewport.addEventListener("pointerdown", (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      viewport.classList.add("dragging");
+      detenerAutoCarrusel();
+    });
+
+    window.addEventListener("pointerup", (e) => {
+      if(!isDragging) return;
+      isDragging = false;
+      viewport.classList.remove("dragging");
+
+      const diferencia = e.clientX - startX;
+
+      if(Math.abs(diferencia) > 50){
+        if(diferencia < 0){
+          moverCarrusel(1);
+        } else {
+          moverCarrusel(-1);
+        }
+      } else {
+        reiniciarAutoCarrusel();
+      }
+    });
+
+    window.addEventListener("pointercancel", () => {
+      isDragging = false;
+      viewport.classList.remove("dragging");
+      reiniciarAutoCarrusel();
+    });
+
+    let draggingThumb = false;
+
+    thumb.addEventListener("pointerdown", (e) => {
+      draggingThumb = true;
+      thumb.classList.add("dragging");
+      detenerAutoCarrusel();
+      e.stopPropagation();
+      e.preventDefault();
+    });
+
+    window.addEventListener("pointermove", (e) => {
+      if(!draggingThumb) return;
+
+      const barRect = progressBar.getBoundingClientRect();
+      const thumbWidth = thumb.getBoundingClientRect().width;
+      let posX = e.clientX - barRect.left - thumbWidth / 2;
+
+      const minX = 0;
+      const maxX = barRect.width - thumbWidth;
+
+      if(posX < minX) posX = minX;
+      if(posX > maxX) posX = maxX;
+
+      const percent = posX / maxX;
+      currentIndex = Math.round(percent * maxIndex);
+
+      actualizarCarrusel();
+    });
+
+    window.addEventListener("pointerup", () => {
+      if(draggingThumb){
+        draggingThumb = false;
+        thumb.classList.remove("dragging");
+        reiniciarAutoCarrusel();
+      }
+    });
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+
+    function setColorFromButton(button){
+      currentColor = button.style.backgroundColor;
+      colorButtons.forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+    }
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      if (e.touches && e.touches.length > 0) {
+        return {
+          x: e.touches[0].clientX - rect.left,
+          y: e.touches[0].clientY - rect.top
+        };
+      }
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    function startPaint(e) {
+      isPainting = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      e.preventDefault();
+    }
+
+    function paint(e) {
+      if (!isPainting) return;
+
+      const pos = getPos(e);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = brushSize;
+
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+
+      e.preventDefault();
+    }
+
+    function stopPaint() {
+      isPainting = false;
+      ctx.beginPath();
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function saveDrawing() {
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext("2d");
+
+      const outline = document.getElementById("outlineImage");
+      const reference = document.getElementById("referenceImage");
+
+      tempCtx.drawImage(outline, 0, 0, tempCanvas.width, tempCanvas.height);
+      tempCtx.drawImage(canvas, 0, 0);
+
+      const link = document.createElement("a");
+      link.download = `${emocionActual}-dibujo.png`;
+      link.href = tempCanvas.toDataURL("image/png");
+      link.click();
+    }
+
+    canvas.addEventListener("mousedown", startPaint);
+    canvas.addEventListener("mousemove", paint);
+    canvas.addEventListener("mouseup", stopPaint);
+    canvas.addEventListener("mouseleave", stopPaint);
+
+    canvas.addEventListener("touchstart", startPaint, { passive: false });
+    canvas.addEventListener("touchmove", paint, { passive: false });
+    canvas.addEventListener("touchend", stopPaint);
+
+    window.addEventListener("resize", () => {
+      recalcularCarrusel();
+      resizeCanvas();
+    });
+
+    recalcularCarrusel();
+  </script>
+
+</body>
+</html>
